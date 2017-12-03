@@ -1,4 +1,6 @@
-# TODO: SysV init script (scripts/powerman, needs to be PLDified)
+# TODO:
+# - SysV init script (scripts/powerman, needs to be PLDified)
+# - register systemd service etc.
 #
 # Conditional build:
 %bcond_without	static_libs	# static library
