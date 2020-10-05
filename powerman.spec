@@ -9,7 +9,7 @@ Summary:	PowerMan - centralized power control for clusters
 Summary(pl.UTF-8):	PowerMan - scentralizowane zarządzanie zasilaniem dla klastrów
 Name:		powerman
 Version:	2.3.24
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		Applications/System
 #Source0Download: https://github.com/chaos/powerman/releases
