@@ -8,18 +8,19 @@
 Summary:	PowerMan - centralized power control for clusters
 Summary(pl.UTF-8):	PowerMan - scentralizowane zarządzanie zasilaniem dla klastrów
 Name:		powerman
-Version:	2.3.24
-Release:	3
+Version:	2.3.27
+Release:	1
 License:	GPL v2+
 Group:		Applications/System
 #Source0Download: https://github.com/chaos/powerman/releases
-Source0:	https://github.com/chaos/powerman/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	94da2ea19d8855fb383029c5da80f03e
+Source0:	https://github.com/chaos/powerman/releases/download/v%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	da3b75d05b42396a1f1167b5490454f9
 URL:		https://github.com/chaos/powerman
 BuildRequires:	bison
 BuildRequires:	curl-devel
 BuildRequires:	flex
 BuildRequires:	genders-devel
+BuildRequires:	jansson-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	net-snmp-devel
 BuildRequires:	pkgconfig
@@ -95,6 +96,7 @@ Statyczna biblioteka PowerMan.
 	%{!?with_static_libs:--disable-static} \
 	--with-genders \
 	--with-httppower \
+	--with-redfishpower \
 	--with-snmppower \
 	--with-systemdsystemunitdir=%{systemdunitdir}
 
@@ -124,12 +126,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS DISCLAIMER NEWS README TODO
+%doc DISCLAIMER NEWS
 %attr(755,root,root) %{_bindir}/pm
 %attr(755,root,root) %{_bindir}/powerman
 %attr(755,root,root) %{_sbindir}/httppower
 %attr(755,root,root) %{_sbindir}/plmpower
 %attr(755,root,root) %{_sbindir}/powermand
+%attr(755,root,root) %{_sbindir}/redfishpower
 %attr(755,root,root) %{_sbindir}/snmppower
 %attr(755,root,root) %{_sbindir}/vpcd
 %dir %{_sysconfdir}/powerman
@@ -145,6 +148,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/httppower.8*
 %{_mandir}/man8/plmpower.8*
 %{_mandir}/man8/powermand.8*
+%{_mandir}/man8/redfishpower.8*
 %{_mandir}/man8/vpcd.8*
 
 %files stonith
