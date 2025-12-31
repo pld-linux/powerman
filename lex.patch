@@ -1,0 +1,78 @@
+From b2b57b5cb63f68d19c8504221099214e8c81c09a Mon Sep 17 00:00:00 2001
+From: Jeremy Sowden <jeremy@azazel.net>
+Date: Thu, 11 Sep 2025 17:45:13 +0100
+Subject: [PATCH] Fix function prototypes with empty parameter lists
+
+Pre-ANSI function declarators which do not declare their parameters have been
+removed in C23 and the syntax reused for declaring functions with no parameters
+(like C++).  GCC 15 defaults to C23, so these declarators may cause compilation
+failures.  For example:
+
+	parse_tab.c: In function 'yyparse':
+	parse_tab.c:2117:7: error: too many arguments to function 'yyerror'; expected 0, have 1
+	 2117 |       yyerror (YY_("syntax error"));
+	      |       ^~~~~~~
+	parse_tab.y:105:6: note: declared here
+	  105 | void yyerror();
+	      |      ^~~~~~~
+	parse_tab.c:2228:3: error: too many arguments to function 'yyerror'; expected 0, have 1
+	 2228 |   yyerror (YY_("memory exhausted"));
+	      |   ^~~~~~~
+	parse_tab.y:105:6: note: declared here
+	  105 | void yyerror();
+	      |      ^~~~~~~
+
+Explicitly specify the parameters of `yyerror` and `yylex`.
+
+Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
+---
+ src/powerman/parse_lex.l | 4 ++--
+ src/powerman/parse_tab.y | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/powerman/parse_lex.l b/src/powerman/parse_lex.l
+index 46991fc1..1e4c8422 100644
+--- a/src/powerman/parse_lex.l
++++ b/src/powerman/parse_lex.l
+@@ -27,7 +27,7 @@ extern YYSTYPE yylval;
+ #include "xmalloc.h"
+ #include "error.h"
+ #include "parse_util.h"
+-extern void yyerror();
++extern void yyerror(const char *);
+ 
+ #define YY_NO_INPUT /* silence compiler warnings about unused input() */
+ #define MAX_INCLUDE_DEPTH 10
+@@ -109,7 +109,7 @@ static List line_ptrs;
+         *string_buf_ptr++ = '\v';
+     }
+     "\n" {
+-        yyerror();
++        yyerror(NULL);
+     }
+     \\[0-9][0-9][0-9] {
+         *string_buf_ptr++ = strtol(&yytext[1], NULL, 8);
+diff --git a/src/powerman/parse_tab.y b/src/powerman/parse_tab.y
+index 65b9660b..ca9ef5e9 100644
+--- a/src/powerman/parse_tab.y
++++ b/src/powerman/parse_tab.y
+@@ -101,8 +101,8 @@ static long _strtolong(char *str);
+ static double _strtodouble(char *str);
+ static void _doubletotv(struct timeval *tv, double val);
+ 
+-extern int yylex();
+-void yyerror();
++extern int yylex(void);
++void yyerror(const char *msg);
+ 
+ 
+ static List device_specs = NULL;      /* list of Spec's */
+@@ -836,7 +836,7 @@ static void _warnmsg(char *msg)
+     err(false, "warning: %s: %s::%d", msg, scanner_file(), scanner_line());
+ }
+ 
+-void yyerror()
++void yyerror(const char *msg)
+ {
+     _errormsg("parse error");
+ }

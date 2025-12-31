@@ -8,13 +8,14 @@
 Summary:	PowerMan - centralized power control for clusters
 Summary(pl.UTF-8):	PowerMan - scentralizowane zarządzanie zasilaniem dla klastrów
 Name:		powerman
-Version:	2.3.27
+Version:	2.4.4
 Release:	1
 License:	GPL v2+
 Group:		Applications/System
 #Source0Download: https://github.com/chaos/powerman/releases
 Source0:	https://github.com/chaos/powerman/releases/download/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	da3b75d05b42396a1f1167b5490454f9
+# Source0-md5:	2995c10b1588186abc7bd7c6dd24f0f6
+Patch0:		lex.patch
 URL:		https://github.com/chaos/powerman
 BuildRequires:	bison
 BuildRequires:	curl-devel
@@ -26,6 +27,9 @@ BuildRequires:	net-snmp-devel
 BuildRequires:	pkgconfig
 Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+# Breaks assert() calls
+%define		filterout_cpp	-DNDEBUG
 
 %description
 PowerMan is a tool for manipulating remote power control (RPC) devices
@@ -89,6 +93,7 @@ Statyczna biblioteka PowerMan.
 
 %prep
 %setup -q
+%patch -P0 -p1
 
 %build
 %configure \
@@ -126,7 +131,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc DISCLAIMER NEWS
+%doc DISCLAIMER NEWS.md README.md
 %attr(755,root,root) %{_bindir}/pm
 %attr(755,root,root) %{_bindir}/powerman
 %attr(755,root,root) %{_sbindir}/httppower
@@ -134,7 +139,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/powermand
 %attr(755,root,root) %{_sbindir}/redfishpower
 %attr(755,root,root) %{_sbindir}/snmppower
-%attr(755,root,root) %{_sbindir}/vpcd
 %dir %{_sysconfdir}/powerman
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/powerman/powerman.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/powerman/*.dev
@@ -149,7 +153,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/plmpower.8*
 %{_mandir}/man8/powermand.8*
 %{_mandir}/man8/redfishpower.8*
-%{_mandir}/man8/vpcd.8*
 
 %files stonith
 %defattr(644,root,root,755)
@@ -157,12 +160,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libs
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libpowerman.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libpowerman.so.0
+%{_libdir}/libpowerman.so.*.*.*
+%ghost %{_libdir}/libpowerman.so.0
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libpowerman.so
+%{_libdir}/libpowerman.so
 %{_includedir}/libpowerman.h
 %{_pkgconfigdir}/libpowerman.pc
 %{_mandir}/man3/libpowerman.3*
