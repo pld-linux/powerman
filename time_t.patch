@@ -1,0 +1,29 @@
+From 8fbc1a13e34c656114c91ee6a51483b959e65039 Mon Sep 17 00:00:00 2001
+From: Boyuan Yang <byang@debian.org>
+Date: Thu, 12 Sep 2024 09:03:37 -0400
+Subject: [PATCH] device.c: Unconditionally cast tv_{sec,usec} to lld for
+ printf
+
+This would avoid build failure due to type mismatch on architecture where
+64-bit time_t and %ld printf formatter coexist and -Werror=format is enabled.
+
+This fixes #199.
+---
+ src/powerman/device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/powerman/device.c b/src/powerman/device.c
+index 3cd6b422..b1938642 100644
+--- a/src/powerman/device.c
++++ b/src/powerman/device.c
+@@ -1332,8 +1332,8 @@ static bool _process_delay(Device *dev, Action *act, ExecCtx *e,
+     /* first time */
+     if (!e->processing) {
+         if (act->vpf_fun)
+-            act->vpf_fun(act->client_id, "delay(%s): %ld.%-6.6ld", dev->name,
+-                    delay.tv_sec, delay.tv_usec);
++            act->vpf_fun(act->client_id, "delay(%s): %lld.%-6.6lld", dev->name,
++                    (long long int)delay.tv_sec, (long long int)delay.tv_usec);
+         e->processing = true;
+         if (gettimeofday(&act->delay_start, NULL) < 0)
+             err_exit(true, "gettimeofday");

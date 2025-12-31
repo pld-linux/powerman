@@ -16,6 +16,7 @@ Group:		Applications/System
 Source0:	https://github.com/chaos/powerman/releases/download/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	2995c10b1588186abc7bd7c6dd24f0f6
 Patch0:		lex.patch
+Patch1:		time_t.patch
 URL:		https://github.com/chaos/powerman
 BuildRequires:	bison
 BuildRequires:	curl-devel
@@ -94,6 +95,7 @@ Statyczna biblioteka PowerMan.
 %prep
 %setup -q
 %patch -P0 -p1
+%patch -P1 -p1
 
 %build
 %configure \
